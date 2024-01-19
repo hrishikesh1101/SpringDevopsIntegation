@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build Maven') {
+            steps {
+                script {
+                    def mvnHome = tool 'MavenTool'
+                    def mavenCMD = "${mvnHome}/bin/mvn"
+                    sh "${mavenCMD} clean install"
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    docker.build("your-docker-image-name:latest")
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.example.com', 'docker-credentials-id') {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+    }
+}
