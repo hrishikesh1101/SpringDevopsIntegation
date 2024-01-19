@@ -1,0 +1,61 @@
+pipeline {
+    agent any
+    
+    tools {
+        maven 'MavenTool'
+        jdk 'JDKTool'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    git url: ' https://github.com/hrishikesh11111/SpringDevopsIntegation.git'
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    def mvnHome = tool 'MavenTool'
+                    def jdkHome = tool 'JDKTool'
+                    
+                    withMaven(maven: mvnHome, jdk: jdkHome) {
+                        sh 'mvn clean install'
+                    }
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    def mvnHome = tool 'MavenTool'
+                    def jdkHome = tool 'JDKTool'
+                    
+                    withMaven(maven: mvnHome, jdk: jdkHome) {
+                        sh 'mvn test'
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    // Add deployment steps here if needed
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline succeeded! Perform additional actions if needed.'
+        }
+        failure {
+            echo 'Pipeline failed! Perform additional actions if needed.'
+        }
+    }
+}
